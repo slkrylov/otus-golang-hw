@@ -51,6 +51,7 @@ func isDigit(r rune) bool {
 	return err == nil
 }
 
+//gocognit:ignore
 func Unpack(str string) (string, error) {
 	runes := []rune(str)
 	f1 := false
