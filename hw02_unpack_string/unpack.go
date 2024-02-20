@@ -76,6 +76,9 @@ func Unpack(str string) (string, error) {
 			if p.nextChar == '&' {
 				return "", ErrInvalidString
 			}
+			if !p.nextIsDigit {
+				return "", ErrInvalidString
+			}
 		}
 
 		if f1 && p.currIsDigit {
