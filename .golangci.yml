@@ -16,6 +16,10 @@ linters-settings:
         allow: 
           - $gostd
           - "github.com/stretchr/testify/require"
+  gocognit:
+    # Minimal code complexity to report.
+    # Default: 30 (but we recommend 10-20)
+    min-complexity: 40
 
 
 issues:
