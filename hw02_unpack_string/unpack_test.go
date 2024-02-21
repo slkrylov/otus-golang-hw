@@ -2,7 +2,6 @@ package hw02unpackstring
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -25,7 +24,6 @@ func TestUnpack(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		fmt.Println(tc)
 		tc := tc
 		t.Run(tc.input, func(t *testing.T) {
 			result, err := Unpack(tc.input)

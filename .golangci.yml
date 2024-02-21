@@ -19,7 +19,7 @@ linters-settings:
   gocognit:
     # Minimal code complexity to report.
     # Default: 30 (but we recommend 10-20)
-    min-complexity: 40
+    # min-complexity: 40
 
 
 issues:

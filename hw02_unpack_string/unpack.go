@@ -61,22 +61,23 @@ func Unpack(str string) (string, error) {
 		p := pointerInit(i, runes)
 
 		if runes[i] == '\\' {
-			if p.nextIsDigit {
-				fmt.Fprintf(&c, "%s", string(p.nextChar))
-				i++
-				f1 = true
-				continue
-			}
-			if p.nextChar == '\\' {
+			switch p.nextChar {
+			case '\\':
 				fmt.Fprintf(&c, "%s", string(p.nextChar))
 				i++
 				f2 = true
 				continue
-			}
-			if p.nextChar == '&' {
+			case '&':
 				return "", ErrInvalidString
 			}
-			if !p.nextIsDigit {
+
+			switch p.nextIsDigit {
+			case true:
+				fmt.Fprintf(&c, "%s", string(p.nextChar))
+				i++
+				f1 = true
+				continue
+			case false:
 				return "", ErrInvalidString
 			}
 		}
