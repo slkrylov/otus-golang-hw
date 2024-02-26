@@ -7,7 +7,7 @@ import (
 )
 
 func Top10(text string) []string {
-	const top10 = 10
+	topX := 10
 	strs := strings.Fields(text)
 	glossary := map[string]int{}
 
@@ -28,10 +28,14 @@ func Top10(text string) []string {
 		return words
 	}
 
+	if len(words) < topX {
+		topX = len(words)
+	}
+
 	sort.Strings(words)
 	sort.SliceStable(words, func(i, j int) bool {
 		return glossary[words[i]] > glossary[words[j]]
 	})
 
-	return words[:top10]
+	return words[:topX]
 }
