@@ -29,7 +29,6 @@ func (c *LRU) Set(key string, value interface{}) bool {
 		// fmt.Printf("(DEBUG): BackAddr=%p\n", k)
 	}
 	return false // key doesn't exist
-
 }
 
 func (c *LRU) Get(key string) (interface{}, bool) {
