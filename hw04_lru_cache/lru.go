@@ -3,9 +3,8 @@ package hw04lrucache
 import "fmt"
 
 type LRU struct {
-	Capacity int
-	Queue    DoublyLinkedList
-	//HashTable map[interface{}]*Item
+	Capacity  int
+	Queue     DoublyLinkedList
 	HashTable map[string]interface{}
 }
 
