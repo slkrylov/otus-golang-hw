@@ -2,20 +2,42 @@ package hw04lrucache
 
 import "fmt"
 
-type DoublyLinkedList struct {
-	Head  *Item
-	Tail  *Item
+type List interface {
+	Len() int
+	Front() *ListItem
+	Back() *ListItem
+	PushFront(v interface{}) *ListItem
+	PushBack(v interface{}) *ListItem
+	Remove(i *ListItem) int
+	MoveToFront(i *ListItem) interface{}
+	Print()
+	Clean()
+}
+
+type list struct {
+	Head  *ListItem
+	Tail  *ListItem
 	Count int
 }
 
-type Item struct {
-	Front *Item
-	Back  *Item
+type ListItem struct {
+	Front *ListItem
+	Back  *ListItem
 	Value interface{}
 }
 
-func (l *DoublyLinkedList) PushBack(v interface{}) *Item {
-	i := Item{Value: v}
+func NewList() List {
+	return new(list)
+}
+
+func (l *list) Clean() {
+	l.Count = 0
+	l.Head = nil
+	l.Tail = nil
+}
+
+func (l *list) PushBack(v interface{}) *ListItem {
+	i := ListItem{Value: v}
 	l.Count++
 	switch {
 	case l.Tail == nil && l.Head == nil:
@@ -29,8 +51,8 @@ func (l *DoublyLinkedList) PushBack(v interface{}) *Item {
 	return &i
 }
 
-func (l *DoublyLinkedList) PushFront(v interface{}) *Item {
-	i := Item{Value: v}
+func (l *list) PushFront(v interface{}) *ListItem {
+	i := ListItem{Value: v}
 	l.Count++
 	switch {
 	case l.Tail == nil && l.Head == nil:
@@ -44,31 +66,31 @@ func (l *DoublyLinkedList) PushFront(v interface{}) *Item {
 	return &i
 }
 
-func (l *DoublyLinkedList) Front() *Item {
+func (l *list) Front() *ListItem {
 	return l.Head
 }
 
-func (l *DoublyLinkedList) Back() *Item {
+func (l *list) Back() *ListItem {
 	return l.Tail
 }
 
-func (i *Item) Next() *Item {
+func (i *ListItem) Next() *ListItem {
 	return i.Back
 }
 
-func (i *Item) Prev() *Item {
+func (i *ListItem) Prev() *ListItem {
 	return i.Front
 }
 
-func (i *Item) ItemValue() interface{} {
+func (i *ListItem) ListItemValue() interface{} {
 	return i.Value
 }
 
-func (l *DoublyLinkedList) Len() int {
+func (l *list) Len() int {
 	return l.Count
 }
 
-func (l *DoublyLinkedList) Remove(i *Item) int {
+func (l *list) Remove(i *ListItem) int {
 	switch {
 	case i.Front == nil:
 		l.Head = i.Back
@@ -84,8 +106,8 @@ func (l *DoublyLinkedList) Remove(i *Item) int {
 	return l.Count
 }
 
-func (l *DoublyLinkedList) FindFirstValue(v int) *Item {
-	var r *Item
+func (l *list) FindFirstValue(v int) *ListItem {
+	var r *ListItem
 	for p := l.Head; p != nil; p = p.Back {
 		r = p
 		if p.Value == v {
@@ -95,7 +117,7 @@ func (l *DoublyLinkedList) FindFirstValue(v int) *Item {
 	return nil
 }
 
-func (l *DoublyLinkedList) MoveToFront(i *Item) interface{} {
+func (l *list) MoveToFront(i *ListItem) interface{} {
 	l.Remove(i)
 	i.Front = nil
 	i.Back = l.Head
@@ -105,9 +127,9 @@ func (l *DoublyLinkedList) MoveToFront(i *Item) interface{} {
 	return i.Value
 }
 
-func (l *DoublyLinkedList) Print() {
+func (l *list) Print() {
 	fmt.Printf("LenOfList=%d HeadPointer=[%p] TailPointer=[%p]\n", l.Count, l.Head, l.Tail)
 	for p := l.Head; p != nil; p = p.Back {
-		fmt.Printf("\tItemAddr[%p] FrontAddr[%-12p] BackAddr[%-12p] ItemValueue[%s]\n", p, p.Front, p.Back, p.Value)
+		fmt.Printf("\tListItemAddr[%p] FrontAddr[%-12p] BackAddr[%-12p] ListItemValue[%v]\n", p, p.Front, p.Back, p.Value)
 	}
 }

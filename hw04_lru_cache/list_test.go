@@ -8,14 +8,14 @@ import (
 
 func TestList(t *testing.T) {
 	t.Run("empty list", func(t *testing.T) {
-		l := DoublyLinkedList{}
+		l := NewList()
 		require.Equal(t, 0, l.Len())
 		require.Nil(t, l.Front())
 		require.Nil(t, l.Back())
 	})
 
 	t.Run("complex", func(t *testing.T) {
-		l := DoublyLinkedList{}
+		l := NewList()
 
 		l.PushFront(10) // [10]
 		l.PushBack(20)  // [10, 20]

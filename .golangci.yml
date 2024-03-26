@@ -8,6 +8,19 @@ linters-settings:
   funlen:
     lines: 150
     statements: 80
+  depguard:
+    rules:
+      main:
+        files:
+          - $test
+        allow: 
+          - $gostd
+          - "github.com/stretchr/testify/require"
+  gocognit:
+    # Minimal code complexity to report.
+    # Default: 30 (but we recommend 10-20)
+    # min-complexity: 40
+
 
 issues:
   exclude-rules:
