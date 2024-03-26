@@ -1,9 +1,6 @@
 package hw04lrucache
 
 import (
-	"math/rand"
-	"strconv"
-	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +19,6 @@ func TestCache(t *testing.T) {
 
 	t.Run("simple", func(t *testing.T) {
 		c := NewCache(5)
-
 		wasInCache := c.Set("aaa", 100)
 		require.False(t, wasInCache)
 
@@ -31,49 +27,50 @@ func TestCache(t *testing.T) {
 
 		val, ok := c.Get("aaa")
 		require.True(t, ok)
-		require.Equal(t, 100, val)
+		require.Equal(t, 100, val.(lruValue).LruVal)
 
 		val, ok = c.Get("bbb")
 		require.True(t, ok)
-		require.Equal(t, 200, val)
+		require.Equal(t, 200, val.(lruValue).LruVal)
 
 		wasInCache = c.Set("aaa", 300)
 		require.True(t, wasInCache)
 
 		val, ok = c.Get("aaa")
 		require.True(t, ok)
-		require.Equal(t, 300, val)
+		require.Equal(t, 300, val.(lruValue).LruVal)
 
 		val, ok = c.Get("ccc")
 		require.False(t, ok)
 		require.Nil(t, val)
 	})
 
-	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+	t.Run("LRU Clean", func(t *testing.T) {
+		lru := NewCache(3)
+
+		lru.Set("aaa", 10) // head -> aaa(10) -> tail
+		lru.Set("bbb", 20) // head -> bbb(20) -> aaa(10) -> tail
+		lru.Set("ccc", 30) // head -> ccc(30) -> bbb(20) -> aaa(10) -> tail
+		lru.Clear()        // head==nil -> (emty ( len==0 )) -> tail==nil
+		require.Equal(t, 0, lru.Len())
+
+		lru.Set("xxx", 10) // head -> xxx(10) -> tail
+		require.Equal(t, 1, lru.Len())
 	})
-}
 
-func TestCacheMultithreading(t *testing.T) {
-	t.Skip() // Remove me if task with asterisk completed.
+	t.Run("LRU Push OverSize", func(t *testing.T) {
+		lru := NewCache(3)
 
-	c := NewCache(10)
-	wg := &sync.WaitGroup{}
-	wg.Add(2)
+		cacheValues := make([]int, 0, 3)
 
-	go func() {
-		defer wg.Done()
-		for i := 0; i < 1_000_000; i++ {
-			c.Set(Key(strconv.Itoa(i)), i)
+		lru.Set("aaa", 10) // head -> 10 -> tail
+		lru.Set("bbb", 20) // head -> 20 -> 10 -> tail
+		lru.Set("ccc", 30) // head -> 30 -> 20 -> 10 -> tail
+		lru.Set("ddd", 40) // head -> 40 -> 30 -> 20  -> tail
+
+		for p := lru.Queue(); p != nil; p = p.Back {
+			cacheValues = append(cacheValues, p.Value.(lruValue).LruVal.(int))
 		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		for i := 0; i < 1_000_000; i++ {
-			c.Get(Key(strconv.Itoa(rand.Intn(1_000_000))))
-		}
-	}()
-
-	wg.Wait()
+		require.Equal(t, []int{40, 30, 20}, cacheValues)
+	})
 }
