@@ -1,7 +1,5 @@
 package hw04lrucache
 
-import "fmt"
-
 type List interface {
 	Len() int
 	Front() *ListItem
@@ -10,7 +8,6 @@ type List interface {
 	PushBack(v interface{}) *ListItem
 	Remove(i *ListItem) int
 	MoveToFront(i *ListItem) interface{}
-	Print()
 	Clean()
 }
 
@@ -28,12 +25,6 @@ type ListItem struct {
 
 func NewList() List {
 	return new(list)
-}
-
-func (l *list) Clean() {
-	l.Count = 0
-	l.Head = nil
-	l.Tail = nil
 }
 
 func (l *list) PushBack(v interface{}) *ListItem {
@@ -127,9 +118,8 @@ func (l *list) MoveToFront(i *ListItem) interface{} {
 	return i.Value
 }
 
-func (l *list) Print() {
-	fmt.Printf("LenOfList=%d HeadPointer=[%p] TailPointer=[%p]\n", l.Count, l.Head, l.Tail)
-	for p := l.Head; p != nil; p = p.Back {
-		fmt.Printf("\tListItemAddr[%p] FrontAddr[%-12p] BackAddr[%-12p] ListItemValue[%v]\n", p, p.Front, p.Back, p.Value)
-	}
+func (l *list) Clean() {
+	l.Count = 0
+	l.Head = nil
+	l.Tail = nil
 }
