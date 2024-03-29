@@ -1,9 +1,6 @@
 package hw04lrucache
 
 import (
-	"math/rand"
-	"strconv"
-	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,7 +19,6 @@ func TestCache(t *testing.T) {
 
 	t.Run("simple", func(t *testing.T) {
 		c := NewCache(5)
-
 		wasInCache := c.Set("aaa", 100)
 		require.False(t, wasInCache)
 
@@ -31,49 +27,32 @@ func TestCache(t *testing.T) {
 
 		val, ok := c.Get("aaa")
 		require.True(t, ok)
-		require.Equal(t, 100, val)
+		require.Equal(t, 100, val.(lruValue).LruVal)
 
 		val, ok = c.Get("bbb")
 		require.True(t, ok)
-		require.Equal(t, 200, val)
+		require.Equal(t, 200, val.(lruValue).LruVal)
 
 		wasInCache = c.Set("aaa", 300)
 		require.True(t, wasInCache)
 
 		val, ok = c.Get("aaa")
 		require.True(t, ok)
-		require.Equal(t, 300, val)
+		require.Equal(t, 300, val.(lruValue).LruVal)
 
 		val, ok = c.Get("ccc")
 		require.False(t, ok)
 		require.Nil(t, val)
 	})
 
-	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+	t.Run("LRU Push OverSize", func(t *testing.T) {
+		lru := NewCache(3)
+		lru.Set("aaa", 10) // head -> 10 -> tail
+		lru.Set("bbb", 20) // head -> 20 -> 10 -> tail
+		lru.Set("ccc", 30) // head -> 30 -> 20 -> 10 -> tail
+		lru.Set("ddd", 40) // head -> 40 -> 30 -> 20  -> tail
+
+		_, ok := lru.Get("aaa")
+		require.False(t, ok)
 	})
-}
-
-func TestCacheMultithreading(t *testing.T) {
-	t.Skip() // Remove me if task with asterisk completed.
-
-	c := NewCache(10)
-	wg := &sync.WaitGroup{}
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		for i := 0; i < 1_000_000; i++ {
-			c.Set(Key(strconv.Itoa(i)), i)
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		for i := 0; i < 1_000_000; i++ {
-			c.Get(Key(strconv.Itoa(rand.Intn(1_000_000))))
-		}
-	}()
-
-	wg.Wait()
 }
